@@ -6,6 +6,7 @@ on:
 jobs:
   build-ios:
     runs-on: macos-latest
+    timeout-minutes: 30
 
     steps:
       - name: Checkout repository
@@ -14,7 +15,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: '3.13'
 
       - name: Check build environment
         run: |
@@ -22,11 +23,28 @@ jobs:
           xcodebuild -version
           python3 --version
 
-      - name: Check game dependencies
+      - name: Install pygame-ios
         run: |
-          ls -la
-          grep -E '^(import|from) ' Trap_and_Play_v2_preview.py || true
+          python3 -m pip install --upgrade pip
+          python3 -m pip install pygame-ios
 
-      - name: Check Python source
+      - name: Prepare game source
         run: |
-          python3 -m py_compile Trap_and_Play_v2_preview.py
+          mkdir -p ios-source
+          cp Trap_and_Play_v2_preview.py ios-source/main.py
+
+      - name: Generate iOS project
+        run: |
+          pygame_ios ios-source main.py 2.5.6
+
+      - name: Find Xcode project
+        run: |
+          find . -name "*.xcodeproj"
+
+      - name: Upload iOS project
+        uses: actions/upload-artifact@v4
+        with:
+          name: TrapAndPlay-iOS-Project
+          path: |
+            pygame-ios-template/
+          if-no-files-found: error
