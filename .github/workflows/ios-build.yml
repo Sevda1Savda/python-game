@@ -70,3 +70,20 @@ jobs:
           name: TrapAndPlay-iOS-App
           path: ios-build/Release-iphoneos/*.app
           if-no-files-found: error
+
+          
+      - name: Create IPA package
+        run: |
+          mkdir -p ipa-output/Payload
+          ditto ios-build/Release-iphoneos/pygame-ios.app ipa-output/Payload/pygame-ios.app
+          test -x ipa-output/Payload/pygame-ios.app/pygame-ios
+          cd ipa-output
+          ditto -c -k --sequesterRsrc --keepParent Payload TrapAndPlay.ipa
+
+      - name: Upload IPA package
+        uses: actions/upload-artifact@v4
+        with:
+          name: TrapAndPlay-IPA
+          path: ipa-output/TrapAndPlay.ipa
+          if-no-files-found: error
+
