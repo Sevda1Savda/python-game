@@ -1,0 +1,32 @@
+name: TrapAndPlay iOS Build
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-ios:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Check build environment
+        run: |
+          sw_vers
+          xcodebuild -version
+          python3 --version
+
+      - name: Check game dependencies
+        run: |
+          ls -la
+          grep -E '^(import|from) ' Trap_and_Play_v2_preview.py || true
+
+      - name: Check Python source
+        run: |
+          python3 -m py_compile Trap_and_Play_v2_preview.py
