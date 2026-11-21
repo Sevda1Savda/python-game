@@ -46,5 +46,5 @@ jobs:
         with:
           name: TrapAndPlay-iOS-Project
           path: |
-            pygame-ios-template/
+            ios-source/pygame-ios-template/
           if-no-files-found: error
