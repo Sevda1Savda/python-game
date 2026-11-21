@@ -45,6 +45,28 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: TrapAndPlay-iOS-Project
-          path: |
-            ios-source/pygame-ios-template/
+          path: ios-source/pygame-ios-template/
+          if-no-files-found: error
+
+      - name: Inspect Xcode targets
+        run: |
+          xcodebuild -list -project ios-source/pygame-ios-template/pygame-ios.xcodeproj
+
+      - name: Compile iOS application
+        run: |
+          xcodebuild \
+            -project ios-source/pygame-ios-template/pygame-ios.xcodeproj \
+            -target pygame-ios \
+            -configuration Release \
+            -sdk iphoneos \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            SYMROOT="$GITHUB_WORKSPACE/ios-build" \
+            build
+
+      - name: Upload compiled iOS application
+        uses: actions/upload-artifact@v4
+        with:
+          name: TrapAndPlay-iOS-App
+          path: ios-build/Release-iphoneos/*.app
           if-no-files-found: error
